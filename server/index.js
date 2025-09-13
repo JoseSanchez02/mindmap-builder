@@ -3,12 +3,17 @@ import cors from 'cors'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { v4 as uuidv4 } from 'uuid'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const app = express()
 const server = createServer(app)
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.NODE_ENV === 'production' ? false : "http://localhost:3000",
     methods: ["GET", "POST"]
   }
 })
@@ -16,6 +21,9 @@ const io = new Server(server, {
 // Middleware
 app.use(cors())
 app.use(express.json())
+
+// Serve static files from the React app build directory
+app.use(express.static(path.join(__dirname, '../client/dist')))
 
 // In-memory storage (in production, use a database)
 const mindMaps = new Map()
@@ -146,6 +154,11 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id)
   })
+})
+
+// Catch all handler: send back React's index.html file for any non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'))
 })
 
 const PORT = process.env.PORT || 5000
