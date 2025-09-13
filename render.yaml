@@ -3,7 +3,8 @@ services:
     name: mindmap-builder
     env: node
     plan: free
-    buildCommand: npm install
+    nodeVersion: 18
+    buildCommand: npm run build:all
     startCommand: npm start
     envVars:
       - key: NODE_ENV
