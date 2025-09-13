@@ -43,7 +43,7 @@ cd mindmap-builder
 
 2. Install all dependencies:
 ```bash
-npm run install-all
+npm install
 ```
 
 3. Start the development servers:
